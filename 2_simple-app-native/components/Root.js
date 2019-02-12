@@ -148,13 +148,6 @@ export const Root = connect(
     ])
   }
 
-  x = async () => {
-    await this.closeDrawerAnimation()
-    this.setState({
-      drawerCloseAnimationInProgress: false
-    })
-  }
-
   componentDidUpdate() {
     const { 
       awaitingForwardTransition, 
@@ -188,7 +181,12 @@ export const Root = connect(
       this.setState({
         awaitingDrawerCloseTransition: false,
         drawerCloseAnimationInProgress: true
-      }, () => this.x())
+      }, async () => {
+        await this.closeDrawerAnimation()
+        this.setState({
+          drawerCloseAnimationInProgress: false
+        })
+      })
   
   }
 
@@ -218,7 +216,6 @@ export const Root = connect(
             <>
               <Navbar 
                 loggedInUser={thinker.user()} 
-                onLogout={() => thinker.logout()}
                 showBackButton={currentNavStack.length}
                 onBackButtonPress={() => this.popNav()}
                 onOpenDrawer={() => dispatch(openDrawer())}
@@ -267,9 +264,46 @@ export const Root = connect(
                           backgroundColor: '#f2f2f2', 
                           elevation: 10,
                           opacity: 1,
-                          zIndex:9999
+                          zIndex:9999,
+                          flexDirection: 'column',
+                          overflow: 'hidden'
                         }}
                       >
+                        <View style={{ 
+                          width: 250,
+                          padding: 10,
+                          flexDirection: 'column',
+                          height: '100%'
+                        }}>
+                          <View>
+                            <TouchableHighlight 
+                              style={{ flexDirection:'row', alignItems:'flex-end' }}
+                              onPress={()=> null}
+                            >
+                              <View style={{ flex:1, flexDirection: 'row', alignItems:'center' }}>
+                                <View> 
+                                  <Text style={{ fontSize: 30, margin: 10 }}>
+                                    {'e'}
+                                  </Text>
+                                </View>
+                                <View style={{flex:1}}></View>
+                                <View> 
+                                  <Text style={{ fontSize: 30, margin: 10 }}>
+                                    {thinker.user().username}
+                                  </Text>
+                                </View>
+                              </View>
+                            </TouchableHighlight>
+                          </View>
+                          <View style={{ flex:1 }}>
+                          </View>
+                          <View>
+                            <Button
+                              title='logout'
+                              onPress={() => thinker.logout()}
+                            />
+                          </View> 
+                        </View>
                       </Animated.View>
                     </>
                   ) : null
@@ -307,7 +341,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: '#f4f4f4',
     alignItems: 'center',
-    paddingBottom: 80
+    paddingBottom: 85
   },
   topPadding: {
     height: 25,

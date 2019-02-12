@@ -64,7 +64,7 @@ export const FeedScreen = connect(
   keyboardWillShow = (event) => {
     Animated.parallel([
       Animated.timing(this.keyboardHeight, {
-        duration: 300,
+        duration: 150,
         toValue: event.endCoordinates.height + 5,
       })
     ]).start()
@@ -74,7 +74,7 @@ export const FeedScreen = connect(
     console.log('will hide', event)
     Animated.parallel([
       Animated.timing(this.keyboardHeight, {
-        duration: 300,
+        duration: 200,
         toValue: 0,
       })
     ]).start()
