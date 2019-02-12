@@ -211,13 +211,15 @@ export class ThinkerSDK {
     return response.body
   }
 
-  async addComment({ content }) {
+  async addComment({ content, thoughtId }) {
     const response = await addComment({ 
       authorId: this._user._id, 
       authorUsername: this._user.username,
       content, 
+      thoughtId,
       token: this._token 
     })
+    console.log(response)
     const comment = response.body
     return { content, author: { id: this._user._id, username: this._user.username } }
   }

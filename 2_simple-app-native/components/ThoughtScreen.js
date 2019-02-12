@@ -16,10 +16,11 @@ export class ThoughtScreen extends React.Component {
   keyboardHeight = new Animated.Value(0)
 
   async addNewComment() {
+    const { thought } = this.props
     const { newCommentText, comments } = this.state
     if (!newCommentText) return
     this.setState({ submitting: true })
-    const newComment = await thinker.addComment({ content: newCommentText })
+    const newComment = await thinker.addComment({ content: newCommentText, thoughtId: thought._id })
     this.setState({
       comments: [newComment].concat(comments),
       submitting: false,
@@ -49,6 +50,7 @@ export class ThoughtScreen extends React.Component {
         toValue: event.endCoordinates.height + 5,
       })
     ]).start()
+    this.setState({ keyboardOpen: true })
   }
 
   keyboardWillHide = (event) => {
@@ -58,37 +60,42 @@ export class ThoughtScreen extends React.Component {
         toValue: 0,
       })
     ]).start()
+    this.setState({ keyboardOpen: false })
   }
 
 
   render() {
-    const { newCommentText, submitting, comments } = this.state
+    const { newCommentText, submitting, comments, keyboardOpen } = this.state
     const { style, thought, dispatch, pushFrame } = this.props
 
     return (
       <Animated.View style={{ alignItems: 'center', paddingBottom: this.keyboardHeight }}>
         <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-          <View style={{ width: Dimensions.get('window').width }}>
-            <View style={{ flexDirection: 'column', padding: 29 }}>
-              <TouchableHighlight 
-                style={{ borderRadius: 10 }}
-                underlayColor={'lightgray'}
-                onPress={() => pushFrame({  
-                  screen: 'profile',
-                  props: { userId: thought.author.id }
-                })}
-              >
-                <View style={{ paddingLeft: 3, flexDirection: 'row', alignItems: 'flex-end' }}>
-                  <View style={{ paddingRight: 12, paddingBottom: 1 }}><Ionicons name="md-person" size={15}/></View>
-                  <Text style={{ fontWeight: 'bold', fontSize: 15 }}>{thought.author.username}</Text>
+          {
+            keyboardOpen ? null : (
+              <View style={{ width: Dimensions.get('window').width }}>
+                <View style={{ flexDirection: 'column', padding: 29 }}>
+                  <TouchableHighlight 
+                    style={{ borderRadius: 10 }}
+                    underlayColor={'lightgray'}
+                    onPress={() => pushFrame({  
+                      screen: 'profile',
+                      props: { userId: thought.author.id }
+                    })}
+                  >
+                    <View style={{ paddingLeft: 3, flexDirection: 'row', alignItems: 'flex-end' }}>
+                      <View style={{ paddingRight: 12, paddingBottom: 1 }}><Ionicons name="md-person" size={15}/></View>
+                      <Text style={{ fontWeight: 'bold', fontSize: 15 }}>{thought.author.username}</Text>
+                    </View>
+                  </TouchableHighlight>
+                  <View style={{ flexDirection: 'row', alignItems: 'flex-start'}}>
+                    <Text style={{ fontSize: 25, marginTop: 10 }}>{thought.content}</Text>
+                  </View>
                 </View>
-              </TouchableHighlight>
-              <View style={{ flexDirection: 'row', alignItems: 'flex-start'}}>
-                <Text style={{ fontSize: 25, marginTop: 10 }}>{thought.content}</Text>
               </View>
-            </View>
-          </View>
-          <View style={{ width: Dimensions.get('window').width, paddingLeft: 29, flexDirection: 'row', alignItems: 'flex-start' }}>
+            )
+          }
+          <View style={{ width: Dimensions.get('window').width, paddingTop: 8, paddingLeft: 29, flexDirection: 'row', alignItems: 'flex-start' }}>
             <Text style={{ fontSize: 20 }}>Comments:</Text>
           </View>
           <View style={{flex: 1, width: Dimensions.get('window').width, alignItems:'center'}}>
