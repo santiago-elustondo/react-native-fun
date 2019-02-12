@@ -1,8 +1,8 @@
 import React from 'react'
 import { StyleSheet, Text, View, TouchableNativeFeedback } from 'react-native'
 
-export const ThoughtCard = ({ thought }) => 
-  <TouchableNativeFeedback>
+export const ThoughtCard = ({ thought, onPress }) => 
+  <TouchableNativeFeedback onPress={() => onPress(thought)}>
     <View style={styles.card}>
       <View style={styles.heading}>
         <View style={styles.usernameContainer}>

@@ -1,20 +1,45 @@
 import React from 'react'
-import { StyleSheet, Text, View, TouchableHighlight, Button } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableNativeFeedback, TouchableHighlight, Button } from 'react-native'
+import { Ionicons } from '@expo/vector-icons';
 
-export const Navbar = ({ loggedInUser, onLogout }) => 
+export const Navbar = ({ loggedInUser, onLogout, onBackButtonPress, showBackButton }) => 
   <View style={styles.container}>
     <View style={styles.leftSide}>
-      <TouchableHighlight>
-        <Text style={styles.username}>
-          {loggedInUser.username}
-        </Text>
-      </TouchableHighlight>
+      <View>
+        <Image
+          style={{ height: 35, width: 30 }}  
+          source={require('../assets/icon.png')}
+        />
+      </View>
+      <View style={{ marginLeft: 15}}>
+        {
+          showBackButton ? (
+            <TouchableHighlight 
+              activeOpacity={1}
+              underlayColor={'lightgray'}
+              style={{borderRadius: 10 }}
+              onPress={() => { setTimeout(() => onBackButtonPress(), 20) }}
+            >
+              <Text style={styles.username}>
+                {'back'}
+              </Text>
+            </TouchableHighlight>
+          ) : null
+        }
+      </View>
     </View>
     <View style={styles.rightSide}>
-      <Button
-        title='logout'
-        onPress={onLogout}
-      />
+      <View style={{flex:1}}></View>
+      <View>
+        <TouchableHighlight 
+          activeOpacity={1}
+          underlayColor={'lightgray'}
+          style={{borderRadius: 10 }}
+          onPress={() => { setTimeout(() => console.log('open drawer'), 20) }}
+        >
+          <Ionicons name="md-menu" size={32} />
+        </TouchableHighlight>
+      </View>
     </View>
   </View>
 
@@ -28,7 +53,9 @@ const styles = StyleSheet.create({
   },
   leftSide: {
     flex: 1,
-    alignItems: 'flex-start'
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingLeft: 10
   },
   username: {
     fontSize: 25,
@@ -36,6 +63,8 @@ const styles = StyleSheet.create({
   },
   rightSide: {
     flex: 1,
+    display: 'flex',
+    flexDirection: 'row',
     alignItems: 'flex-end'
   }
 })

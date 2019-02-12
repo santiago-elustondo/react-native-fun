@@ -70,6 +70,22 @@ const addThought = async ({ token, authorId, authorUsername, content }) =>
     })
   }))
 
+const getThought = async ({ token, thoughtId }) =>
+  parseBody(await fetch(`http://${API_DOMAIN}/api/v1/thoughts/${thoughtId}`, { 
+    method: 'GET',
+    headers: { 
+      'Authorization': `Bearer ${token}`, 
+    }
+  }))
+
+const getComments = async ({ token, thoughtId }) => 
+  parseBody(await fetch(`http://${API_DOMAIN}/api/v1/thoughts/${thoughtId}/comments`, { 
+    method: 'GET',
+    headers: { 
+      'Authorization': `Bearer ${token}`, 
+    }
+  }))
+
 // SERVICE -------------
 
 export class ThinkerSDK {
@@ -156,6 +172,17 @@ export class ThinkerSDK {
     const thought = response.body
     return { ...thought, user: this._user, comments: [] }
   }
+
+  async fetchThought(thoughtId) {
+    const response = await getThought({ token: this._token, thoughtId })
+    return response.body
+  }
+
+  async fetchComments({ thoughtId }) {
+    const response = await getComments({ token: this._token, thoughtId })
+    return response.body
+  }
+
 
   subscribeToThoughts(handler){
     const fetchUpdate = async () => {

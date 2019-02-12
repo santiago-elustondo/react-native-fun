@@ -1,17 +1,34 @@
 import React from 'react'
-import { View, Text, TextInput, Button, StyleSheet, FlatList, ProgressBarAndroid } from 'react-native'
+import { connect } from 'react-redux'
+import { KeyboardAvoidingView, Dimensions, Animated, Keyboard, ScrollView, View, Text, TextInput, Button, StyleSheet, FlatList, ProgressBarAndroid } from 'react-native'
 
+import { fa } from '../functional-redux'
 import { ThoughtCard } from './ThoughtCard'
 import { thinker } from '../thinker-sdk.singleton'
 
-export class FeedScreen extends React.Component {
+// put in actions
+const pushNav = (dispatch, frame) => {
+  dispatch(fa(
+    state => ({
+      navigation: {
+        stack: state.navigation.stack.concat([ frame ])
+      }
+    })
+  ))
+} 
+
+export const FeedScreen = connect(
+  ({ navigation }) => ({ navigation }) 
+)(class extends React.Component {
 
   state = { 
     thoughts: [],
     loading: true,
     submitting: false,
-    newThoughtText: '',
+    newThoughtText: ''
   }
+
+  keyboardHeight = new Animated.Value(0)
 
   async addNewThought() {
     const { newThoughtText, thoughts } = this.state
@@ -32,64 +49,98 @@ export class FeedScreen extends React.Component {
     })
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     thinker.subscribeToThoughts(this.handleThoughtsData)
+    this.keyboardWillShowSub = Keyboard.addListener('keyboardDidShow', this.keyboardWillShow)
+    this.keyboardWillHideSub = Keyboard.addListener('keyboardDidHide', this.keyboardWillHide)
   }
 
   componentWillUnmount() {
     thinker.unsubscribeToThoughts(this.handleThoughtsData)
+    this.keyboardWillShowSub.remove()
+    this.keyboardWillHideSub.remove()
+  }
+
+  keyboardWillShow = (event) => {
+    Animated.parallel([
+      Animated.timing(this.keyboardHeight, {
+        duration: 300,
+        toValue: event.endCoordinates.height + 5,
+      })
+    ]).start()
+  }
+
+  keyboardWillHide = (event) => {
+    console.log('will hide', event)
+    Animated.parallel([
+      Animated.timing(this.keyboardHeight, {
+        duration: 300,
+        toValue: 0,
+      })
+    ]).start()
   }
 
   render() {
     const { newThoughtText, thoughts, loading, submitting } = this.state
+    const { pushFrame } = this.props
 
     return (
-      <>
-        <View style={styles.newThoughtContainer}>
-          <Text style={styles.newThoughtTitle}>
-            What are you thinking about?
-          </Text>
-          <TextInput 
-            style={styles.newThoughtInput}
-            value={newThoughtText}
-            multiline = {true}
-            numberOfLines = {2}
-            onChangeText={newThoughtText => this.setState({ newThoughtText })}
-          />
-          {
-            submitting ? (
-              <ProgressBarAndroid style={styles.newThoughtButton}/>
-            ) : (
-              <Button 
-                style={styles.newThoughtButton} 
-                title='submit'
-                onPress={() => this.addNewThought()}
-              />
-            )
-          }
-        </View>
-        {
-          loading ? (
-            <ProgressBarAndroid style={{marginTop: 50}}/>
-          ) : (
-            <FlatList
-              data={thoughts}
-              renderItem={({ item }) => <ThoughtCard thought={item}/>}
-              keyExtractor={item => item._id}
-              style={styles.thoughtsContainer}
-              showsVerticalScrollIndicator={false}
+      <Animated.View style={{ alignItems: 'center', paddingBottom: this.keyboardHeight }}>
+        <View style={{alignItems: 'center',  flexDirection: 'column'}}>
+          <View style={{flex: 1}}>
+            {
+              loading ? (
+                <ProgressBarAndroid style={{marginTop: 50}}/>
+              ) : (
+                <FlatList
+                  data={thoughts}
+                  renderItem={
+                    ({ item }) => 
+                      <ThoughtCard 
+                        thought={item} 
+                        onPress={thought => pushFrame({ props: { thought } })}
+                      />
+                  }
+                  keyExtractor={item => item._id}
+                  style={styles.thoughtsContainer}
+                  showsVerticalScrollIndicator={false}
+                />
+              )
+            }
+          </View>
+          <View style={styles.newThoughtContainer}>
+            <Text style={styles.newThoughtTitle}>
+              What are you thinking about?
+            </Text>
+            <TextInput 
+              style={styles.newThoughtInput}
+              value={newThoughtText}
+              multiline={true}
+              numberOfLines={2}
+              onChangeText={newThoughtText => this.setState({ newThoughtText })}
             />
-          )
-        }
-      </>
+            {
+              submitting ? (
+                <ProgressBarAndroid style={styles.newThoughtButton}/>
+              ) : (
+                <Button 
+                  style={styles.newThoughtButton} 
+                  title='submit'
+                  onPress={() => this.addNewThought()}
+                />
+              )
+            }
+          </View>
+        </View>
+      </Animated.View>
     )
   }
-}
+})
 
 const styles = StyleSheet.create({
   newThoughtContainer: {
     backgroundColor: 'white',
-    width: '100%',
+    width: Dimensions.get('window').width,
     padding: 10,
     // android
     elevation: 10,
@@ -98,6 +149,10 @@ const styles = StyleSheet.create({
     shadowColor: 'gray',
     shadowOpacity: 0.5,
   },
+  feedTitle: {
+    marginTop: 10,
+    fontSize: 25
+  }, 
   newThoughtTitle: {
     fontSize: 20,
   },
@@ -113,6 +168,6 @@ const styles = StyleSheet.create({
   },
   thoughtsContainer: {
     width: '90%',
-    marginTop: 10,
+    marginTop: 10
   }
 })
