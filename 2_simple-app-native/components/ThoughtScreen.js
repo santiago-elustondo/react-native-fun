@@ -113,7 +113,7 @@ export class ThoughtScreen extends React.Component {
                         })}
                       />
                     }
-                    keyExtractor={item => item._id}
+                    keyExtractor={item => item._id || 'new-comment'}
                     style={styles.thoughtsContainer}
                     showsVerticalScrollIndicator={false}
                   />

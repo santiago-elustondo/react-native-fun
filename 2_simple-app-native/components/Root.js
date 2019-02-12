@@ -1,5 +1,5 @@
 import React from 'react'
-import { Animated, Easing, View, Text, StyleSheet, TouchableHighlight, Button, Dimensions } from 'react-native'
+import { BackHandler, Animated, Easing, View, Text, StyleSheet, TouchableHighlight, Button, Dimensions } from 'react-native'
 import { connect } from 'react-redux'
 import { Ionicons } from '@expo/vector-icons'
 
@@ -70,7 +70,12 @@ export const Root = connect(
   drawerWidth = new Animated.Value(0)
   drawerOverlayOpacity = new Animated.Value(0)
 
+  _ignoreNavActions = false
+
   pushNav(frame) {
+    if (this._ignoreNavActions) return
+    this._ignoreNavActions = true
+    setTimeout(() => this._ignoreNavActions = false, 500)
     this.props.dispatch(fa(
       state => ({
         navigation: {
@@ -81,6 +86,9 @@ export const Root = connect(
   }
 
   popNav() {
+    if (this._ignoreNavActions) return
+    this._ignoreNavActions = true
+    setTimeout(() => this._ignoreNavActions = false, 500)
     this.props.dispatch(fa(
       state => {
         const { navigation: { stack } } = state
@@ -101,8 +109,18 @@ export const Root = connect(
     ))
   }
 
+  handleBackPress = () => {
+    setTimeout(() => this.popNav())
+    return true
+  }
+
   componentDidMount() {
     thinker.subscribeToAuthState(authState => this.setState({ authState }))
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)    
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress)
   }
 
   repositionSlider() {
