@@ -1,15 +1,22 @@
 import React from 'react'
 import { StyleSheet, Text, View, Image, TouchableNativeFeedback, TouchableHighlight, Button } from 'react-native'
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons'
 
-export const Navbar = ({ loggedInUser, onLogout, onOpenDrawer, onBackButtonPress, showBackButton }) => 
+export const Navbar = ({ loggedInUser, onLogout, onOpenDrawer, onBackButtonPress, showBackButton, onHomeButtonPress }) => 
   <View style={styles.container}>
     <View style={styles.leftSide}>
       <View>
-        <Image
-          style={{ height: 35, width: 30 }}  
-          source={require('../assets/icon.png')}
-        />
+        <TouchableHighlight 
+          activeOpacity={1}
+          underlayColor={'lightgray'}
+          style={{borderRadius: 10 }}
+          onPress={() => { setTimeout(() => onHomeButtonPress(), 20) }}
+        >
+          <Image
+            style={{ height: 35, width: 30 }}  
+            source={require('../assets/icon.png')}
+          />
+        </TouchableHighlight>
       </View>
       <View style={{ marginLeft: 15}}>
         {
@@ -20,9 +27,10 @@ export const Navbar = ({ loggedInUser, onLogout, onOpenDrawer, onBackButtonPress
               style={{borderRadius: 10 }}
               onPress={() => { setTimeout(() => onBackButtonPress(), 20) }}
             >
-              <Text style={styles.username}>
-                {'back'}
-              </Text>
+              <View style={{flexDirection:'row'}}>
+                <Ionicons style={{ marginTop: 2 }}name="md-arrow-dropleft" size={32} />
+                <Text style={{ ...styles.username, marginLeft: 5 }}>back</Text>
+              </View>
             </TouchableHighlight>
           ) : null
         }

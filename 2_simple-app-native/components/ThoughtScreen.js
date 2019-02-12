@@ -1,5 +1,6 @@
 import React from 'react'
-import { Animated, Dimensions, KeyboardAvoidingView, View, Text, TextInput, Button, StyleSheet, FlatList, ProgressBarAndroid } from 'react-native'
+import { Animated, Dimensions, TouchableHighlight, KeyboardAvoidingView, View, Text, TextInput, Button, StyleSheet, FlatList, ProgressBarAndroid } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 
 import { ThoughtCard } from './ThoughtCard'
 import { thinker } from '../thinker-sdk.singleton'
@@ -27,27 +28,38 @@ export class ThoughtScreen extends React.Component {
   async componentDidMount() {
     const { thought } = this.props
     const comments = await thinker.fetchComments({ thoughtId: thought._id })
-    console.log(comments)
     this.setState({ comments })
   }
 
   render() {
     const { newCommentText, submitting, comments } = this.state
-    const { style, thought } = this.props
+    const { style, thought, dispatch, pushFrame } = this.props
 
-    console.log('render', comments)
     return (
-      <KeyboardAvoidingView style={{ alignItems: 'center' }}>
+      <View style={{ alignItems: 'center' }}>
         <View style={{ alignItems: 'center', flexDirection: 'column' }}>
           <View style={{ width: Dimensions.get('window').width }}>
             <View style={{ flexDirection: 'column', padding: 29 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 25 }}>{thought.author.username}</Text>
-              </View>
+              <TouchableHighlight 
+                style={{ borderRadius: 10 }}
+                underlayColor={'lightgray'}
+                onPress={() => pushFrame({  
+                  screen: 'profile',
+                  props: { userId: thought.author.id }
+                })}
+              >
+                <View style={{ paddingLeft: 3, flexDirection: 'row', alignItems: 'flex-end' }}>
+                  <View style={{ paddingRight: 12, paddingBottom: 1 }}><Ionicons name="md-person" size={15}/></View>
+                  <Text style={{ fontWeight: 'bold', fontSize: 15 }}>{thought.author.username}</Text>
+                </View>
+              </TouchableHighlight>
               <View style={{ flexDirection: 'row', alignItems: 'flex-start'}}>
-                <Text style={{ fontSize: 20, marginTop: 10 }}>{thought.content}</Text>
+                <Text style={{ fontSize: 25, marginTop: 10 }}>{thought.content}</Text>
               </View>
             </View>
+          </View>
+          <View style={{ width: Dimensions.get('window').width, paddingLeft: 29, flexDirection: 'row', alignItems: 'flex-start' }}>
+            <Text style={{ fontSize: 20 }}>Comments:</Text>
           </View>
           <View style={{flex: 1, width: Dimensions.get('window').width, alignItems:'center'}}>
             {
@@ -56,7 +68,13 @@ export class ThoughtScreen extends React.Component {
                   <FlatList
                     data={comments}
                     renderItem={
-                      ({ item }) => <ThoughtCard thought={item}/>
+                      ({ item }) => <ThoughtCard 
+                        thought={item} 
+                        onPress={() => pushFrame({  
+                          screen: 'profile',
+                          props: { userId: item.author.id }
+                        })}
+                      />
                     }
                     keyExtractor={item => item._id}
                     style={styles.thoughtsContainer}
@@ -88,13 +106,13 @@ export class ThoughtScreen extends React.Component {
                 <Button 
                   style={styles.newCommentButton} 
                   title='submit'
-                  onPress={() => this.addnewComment()}
+                  onPress={() => this.addNewComment()}
                 />
               )
             }
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     )
   }
 }

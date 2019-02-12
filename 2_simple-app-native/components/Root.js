@@ -1,12 +1,15 @@
 import React from 'react'
 import { Animated, Easing, View, Text, StyleSheet, TouchableHighlight, Button, Dimensions } from 'react-native'
 import { connect } from 'react-redux'
+import { Ionicons } from '@expo/vector-icons'
 
 import { fa } from '../functional-redux'
 import { thinker } from '../thinker-sdk.singleton'
 import { FeedScreen } from './FeedScreen'
 import { AuthScreen } from './AuthScreen'
 import { ThoughtScreen } from './ThoughtScreen'
+import { SettingsScreen } from './SettingsScreen'
+import { ProfileScreen } from './ProfileScreen'
 import { Navbar } from './Navbar'
 
 const screenWidth = Dimensions.get('window').width
@@ -87,6 +90,14 @@ export const Root = connect(
           }
         }
       }
+    ))
+  }
+
+  resetNav() {
+    this.props.dispatch(fa(
+      state => ({
+        navigation: { stack: [] }
+      })
     ))
   }
 
@@ -191,7 +202,6 @@ export const Root = connect(
   }
 
   render() {
-    console.log('rendering')
     const { 
       authState, currentNavStack, previousNavStack, 
       sliderPosition, currentlyDoingBackwardTransition,
@@ -206,6 +216,8 @@ export const Root = connect(
         </View>
       )
 
+    console.log(currentNavStack)
+
     return (
       <View style={styles.appContainer}>
         <View style={styles.topPadding}></View>
@@ -216,6 +228,7 @@ export const Root = connect(
             <>
               <Navbar 
                 loggedInUser={thinker.user()} 
+                onHomeButtonPress={() => this.resetNav()}
                 showBackButton={currentNavStack.length}
                 onBackButtonPress={() => this.popNav()}
                 onOpenDrawer={() => dispatch(openDrawer())}
@@ -277,13 +290,18 @@ export const Root = connect(
                         }}>
                           <View>
                             <TouchableHighlight 
-                              style={{ flexDirection:'row', alignItems:'flex-end' }}
-                              onPress={()=> null}
+                              style={{ flexDirection:'row', alignItems:'flex-end', borderRadius: 10 }}
+                              underlayColor={'lightgray'}
+                              onPress={() => {
+                                setTimeout(() => dispatch(closeDrawer()), 200)
+                                if (!currentNavStack.length || currentNavStack[currentNavStack.length - 1].screen !== 'settings')
+                                  setTimeout(() => this.pushNav({ screen: 'settings' }), 100)
+                              }}
                             >
                               <View style={{ flex:1, flexDirection: 'row', alignItems:'center' }}>
                                 <View> 
                                   <Text style={{ fontSize: 30, margin: 10 }}>
-                                    {'e'}
+                                    <Ionicons name="md-person" size={32} />
                                   </Text>
                                 </View>
                                 <View style={{flex:1}}></View>
@@ -320,7 +338,15 @@ export const Root = connect(
                     (currentlyDoingBackwardTransition ? previousNavStack : currentNavStack)
                       .map((frame, i) => (
                         <View key={i} style={{ width: screenWidth }}>
-                          <ThoughtScreen {...frame.props} pushFrame={frame => this.pushNav(frame)}/>
+                          {
+                            frame.screen === 'settings' ? (
+                              <SettingsScreen {...frame.props}/>
+                            ) : frame.screen === 'profile' ? (
+                              <ProfileScreen {...frame.props} pushFrame={frame => this.pushNav(frame)}/>
+                            ) : (
+                              <ThoughtScreen {...frame.props} pushFrame={frame => this.pushNav(frame)}/>
+                            )
+                          }
                         </View>
                       ))
                   }

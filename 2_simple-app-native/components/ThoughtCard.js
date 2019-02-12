@@ -1,12 +1,13 @@
 import React from 'react'
 import { StyleSheet, Text, View, TouchableNativeFeedback } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 
 export const ThoughtCard = ({ thought, onPress }) => 
   <TouchableNativeFeedback onPress={() => onPress(thought)}>
     <View style={styles.card}>
       <View style={styles.heading}>
         <View style={styles.usernameContainer}>
-          <Text style={styles.username}> {thought.author.username} </Text>
+          <Text style={styles.username}> <Ionicons name="md-person" size={15} />  {thought.author.username} </Text>
         </View>
         <View style={styles.creationDateContainer}>
           <Text style={styles.creationDate}> 2019-02-?? </Text>

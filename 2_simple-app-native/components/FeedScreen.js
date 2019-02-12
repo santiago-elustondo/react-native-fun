@@ -71,7 +71,6 @@ export const FeedScreen = connect(
   }
 
   keyboardWillHide = (event) => {
-    console.log('will hide', event)
     Animated.parallel([
       Animated.timing(this.keyboardHeight, {
         duration: 200,

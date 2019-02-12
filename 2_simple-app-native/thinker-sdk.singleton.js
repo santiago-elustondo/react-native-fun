@@ -151,13 +151,24 @@ export class ThinkerSDK {
   }
 
   async fetchUser({ userId }) {
-    const response = await getUser({ userId, token: this._token })
-    return response.body
+    console.log('userId', userId)
+    const response = await getUsers({ token: this._token })
+    return response.body.find(user => user._id === userId)
   }
 
-  async fetchThoughts() {
-    const response = await getThoughts({ token: this._token })
-    const thoughts = response.body
+  async fetchThoughts(thoughtIds) {
+    let thoughts
+    if (!thoughtIds) {
+      const response = await getThoughts({ token: this._token })
+      thoughts = response.body
+    } else {
+      const responses = await Promise.all(
+        thoughtIds.map(
+          thoughtId => getThought({ token: this._token, thoughtId })
+        )
+      )
+      thoughts = responses.map(res => res.body)
+    }
     thoughts.reverse()
     return thoughts
   }

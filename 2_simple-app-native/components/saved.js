@@ -133,7 +133,6 @@ export const Root = connect(
   }
 
   render() {
-    console.log(this.props)
     const { authState, s, nav } = this.state
 
     if (authState === 'LOADING') 
