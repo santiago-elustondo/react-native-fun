@@ -1,5 +1,5 @@
 import React from 'react'
-import { Animated, Dimensions, TouchableHighlight, KeyboardAvoidingView, View, Text, TextInput, Button, StyleSheet, FlatList, ProgressBarAndroid } from 'react-native'
+import { Animated, Dimensions, TouchableHighlight, Keyboard, View, Text, TextInput, Button, StyleSheet, FlatList, ProgressBarAndroid } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 
 import { ThoughtCard } from './ThoughtCard'
@@ -13,30 +13,60 @@ export class ThoughtScreen extends React.Component {
     newCommentText: '',
   }
 
+  keyboardHeight = new Animated.Value(0)
+
   async addNewComment() {
-    const { newCommentText, thoughts } = this.state
+    const { newCommentText, comments } = this.state
     if (!newCommentText) return
     this.setState({ submitting: true })
-    const newComment = await thinker.addThought({ content: newCommentText })
+    const newComment = await thinker.addComment({ content: newCommentText })
     this.setState({
-      thoughts: [newComment].concat(thoughts),
+      comments: [newComment].concat(comments),
       submitting: false,
       newCommentText: ''
     })
+    Keyboard.dismiss()
   }
 
   async componentDidMount() {
     const { thought } = this.props
+    this.keyboardWillShowSub = Keyboard.addListener('keyboardDidShow', this.keyboardWillShow)
+    this.keyboardWillHideSub = Keyboard.addListener('keyboardDidHide', this.keyboardWillHide)
     const comments = await thinker.fetchComments({ thoughtId: thought._id })
     this.setState({ comments })
   }
+
+  componentWillUnmount() {
+    thinker.unsubscribeToThoughts(this.handleThoughtsData)
+    this.keyboardWillShowSub.remove()
+    this.keyboardWillHideSub.remove()
+  }
+
+  keyboardWillShow = (event) => {
+    Animated.parallel([
+      Animated.timing(this.keyboardHeight, {
+        duration: 150,
+        toValue: event.endCoordinates.height + 5,
+      })
+    ]).start()
+  }
+
+  keyboardWillHide = (event) => {
+    Animated.parallel([
+      Animated.timing(this.keyboardHeight, {
+        duration: 200,
+        toValue: 0,
+      })
+    ]).start()
+  }
+
 
   render() {
     const { newCommentText, submitting, comments } = this.state
     const { style, thought, dispatch, pushFrame } = this.props
 
     return (
-      <View style={{ alignItems: 'center' }}>
+      <Animated.View style={{ alignItems: 'center', paddingBottom: this.keyboardHeight }}>
         <View style={{ alignItems: 'center', flexDirection: 'column' }}>
           <View style={{ width: Dimensions.get('window').width }}>
             <View style={{ flexDirection: 'column', padding: 29 }}>
@@ -112,7 +142,7 @@ export class ThoughtScreen extends React.Component {
             }
           </View>
         </View>
-      </View>
+      </Animated.View>
     )
   }
 }

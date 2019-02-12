@@ -40,6 +40,7 @@ export const FeedScreen = connect(
       submitting: false,
       newThoughtText: ''
     })
+    Keyboard.dismiss()
   }
 
   handleThoughtsData = async thoughts => {

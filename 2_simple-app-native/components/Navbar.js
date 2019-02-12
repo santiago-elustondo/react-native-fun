@@ -14,7 +14,7 @@ export const Navbar = ({ loggedInUser, onLogout, onOpenDrawer, onBackButtonPress
         >
           <Image
             style={{ height: 35, width: 30 }}  
-            source={require('../assets/icon.png')}
+            source={require('../assets/lightbulb-icon.png')}
           />
         </TouchableHighlight>
       </View>
