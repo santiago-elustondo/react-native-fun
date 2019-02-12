@@ -2,7 +2,7 @@ import React from 'react'
 import { StyleSheet, Text, View, Image, TouchableNativeFeedback, TouchableHighlight, Button } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
 
-export const Navbar = ({ loggedInUser, onLogout, onBackButtonPress, showBackButton }) => 
+export const Navbar = ({ loggedInUser, onLogout, onOpenDrawer, onBackButtonPress, showBackButton }) => 
   <View style={styles.container}>
     <View style={styles.leftSide}>
       <View>
@@ -35,7 +35,7 @@ export const Navbar = ({ loggedInUser, onLogout, onBackButtonPress, showBackButt
           activeOpacity={1}
           underlayColor={'lightgray'}
           style={{borderRadius: 10 }}
-          onPress={() => { setTimeout(() => console.log('open drawer'), 20) }}
+          onPress={() => { setTimeout(() => onOpenDrawer(), 20) }}
         >
           <Ionicons name="md-menu" size={32} />
         </TouchableHighlight>
