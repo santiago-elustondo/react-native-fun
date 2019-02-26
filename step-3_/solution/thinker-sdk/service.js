@@ -14,8 +14,8 @@ export class ThinkerSDK {
 
   auth() {
     return {
-      state: this._authState,
-      user: this._user
+      state: this.authState(),
+      user: this.user()
     }
   }
 
