@@ -9,18 +9,15 @@ import { FeedScreen } from './FeedScreen'
 import { LoadingSpinner } from './LoadingSpinner'
 import s from './Root.styles'
 
-export class Root extends React.PureComponent {
-
-  state = { auth: thinker.auth() }
-
-  componentDidMount() {
-    thinker.subscribeToAuth(auth => {
-      this.setState({ auth })
-    })    
-  }
+export const Root = connect(
+  state => ({
+    auth: state.auth
+  })
+)(
+class extends React.PureComponent {
 
   render() {
-    const { auth } = this.state
+    const { auth } = this.props
 
     return (
       <View style={s.appContainer}>
@@ -43,4 +40,4 @@ export class Root extends React.PureComponent {
       </View>
     )
   }
-}
+})

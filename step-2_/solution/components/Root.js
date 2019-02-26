@@ -1,6 +1,5 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { View, Text, ProgressViewIOS, ProgressBarAndroid, Platform } from 'react-native'
+import { View } from 'react-native'
 
 import { thinker } from '../thinker-sdk.singleton'
 import { AuthScreen } from './AuthScreen'
