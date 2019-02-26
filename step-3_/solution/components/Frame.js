@@ -1,13 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { TouchableHighlight, View, Text, Button, Dimensions } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { View } from 'react-native'
 
 import { t } from '../transitional-redux'
-import { thinker } from '../thinker-sdk.singleton'
 import { Drawer } from './Drawer'
 import { Navbar} from './Navbar'
-import s from './Drawer.styles'
+import s from './Frame.styles'
 
 export const Frame = connect(
   state => ({
@@ -22,16 +20,9 @@ export const Frame = connect(
 )(({ auth, closeDrawer, drawerOpen, children }) => 
   <>
     <Navbar/>
-    <View style={{
-      width: Dimensions.get('window').width,
-      height: '100%'
-    }}>
+    <View style={s.belowNavbar}>
       <Drawer/>
-      <View style={{
-        width: Dimensions.get('window').width,
-        flexDirection: 'row',
-        height: '100%'
-      }}>
+      <View style={s.activeScreen}>
         {children}  
       </View>
     </View>

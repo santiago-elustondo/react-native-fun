@@ -34,7 +34,6 @@ class extends React.Component {
   overlayOpacity = new Animated.Value(0)
 
   static getDerivedStateFromProps(props, state) {
-
     if (props.open && !state.prevOpen)
       return {
         awaitingOpenTransition: true,
@@ -48,7 +47,6 @@ class extends React.Component {
       }
 
     return null
-
   }
 
   componentDidUpdate() {
@@ -72,7 +70,6 @@ class extends React.Component {
           closeAnimationInProgress: false
         })
       })
-  
   }
 
   doOpenAnimation() {
