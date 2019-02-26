@@ -8,8 +8,8 @@ export const ThoughtCard = ({ thought }) =>
   <View style={s.card}>
     <View style={s.heading}>
       <View style={s.usernameContainer}>
+        <Ionicons style={s.icon} name="md-person" size={15}/> 
         <Text style={s.username}>
-          <Ionicons name="md-person" size={15}/> 
           {thought.author.username} 
         </Text>
       </View>

@@ -7,6 +7,8 @@ import { AuthScreen } from './AuthScreen'
 import { Navbar } from './Navbar'
 import { FeedScreen } from './FeedScreen'
 import { LoadingSpinner } from './LoadingSpinner'
+import { Drawer } from './Drawer'
+import { Frame } from './Frame'
 import s from './Root.styles'
 
 export const Root = connect(
@@ -26,13 +28,9 @@ class extends React.PureComponent {
           auth.state === 'LOADING' ? (
             <LoadingSpinner/>
           ) : auth.state === 'LOGGED-IN' ? (
-            <>
-              <Navbar
-                loggedInUser={auth.user}
-                onLogout={() => thinker.logout()}
-              />
+            <Frame>
               <FeedScreen/>
-            </>
+            </Frame>
           ) : (
             <AuthScreen/>
           )

@@ -16,15 +16,22 @@ export default StyleSheet.create({
     shadowOpacity: 0.5,
   },
   heading: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    paddingRight: 7,
+    paddingLeft: 7
   },
   usernameContainer: {
     flex: 1,
-    alignItems: 'flex-start'
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   username: {
     fontWeight: 'bold',
-    fontSize: 18
+    fontSize: 18,
+    paddingLeft: 4
+  },
+  icon: {
+    paddingRight: 4
   },
   creationDateContainer: {
     flex: 1,
