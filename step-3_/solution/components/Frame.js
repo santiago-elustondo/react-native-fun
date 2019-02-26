@@ -1,23 +1,11 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import { View } from 'react-native'
 
-import { t } from '../transitional-redux'
 import { Drawer } from './Drawer'
 import { Navbar} from './Navbar'
 import s from './Frame.styles'
 
-export const Frame = connect(
-  state => ({
-    auth: state.auth,
-    drawerOpen: state.drawerOpen
-  }),
-  dispatch => ({
-    closeDrawer: () => dispatch(t(state => ({
-      drawerOpen: false
-    })))
-  })
-)(({ auth, closeDrawer, drawerOpen, children }) => 
+export const Frame = ({ children }) => 
   <>
     <Navbar/>
     <View style={s.belowNavbar}>
@@ -27,4 +15,3 @@ export const Frame = connect(
       </View>
     </View>
   </>
-)
